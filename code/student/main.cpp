@@ -95,6 +95,7 @@ void sort(Student* pStudentArr, int nSize, bool(*qualifier)(Student, Student))
 		pStudentArr[i] = nMin;
 	}
 }
+
 void show(Student* pStudentArr, int nSize)
 {
 	std::cout << std::endl;
