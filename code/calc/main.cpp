@@ -1,81 +1,89 @@
 #include <iostream>
-#include <conio.h>
-#include <climits>
-#include <stdlib.h>
 
-#define MAX_INT_POS 11
+enum state {
+	CALC_OK = 0,
+	CALC_WRONG_OPERATOR,
+	CALC_ZERO_DIVISION
+};
 
-void backspace()
+int status = 0;
+
+int mult(int op1, int op2)
 {
-	std::cout << (char) 8;
-    std::cout << ' ';
-    std::cout << (char) 8;
+	status = (int) CALC_OK;
+	return op1 * op2;
 }
 
-int pow(int power)
+int sum(int op1, int op2)
 {
-	int result = 1;
-	for( int i = 0; i < power; ++i )
-		result *= 10;
-	return result;
+	status = (int) CALC_OK;
+	return op1 + op2;
 }
 
-//int atoi(char number_str[])
-//{
-//	int result = 0;
-//	for(int index = 0, power = strlen(number_str) - 2, len = strlen(number_str) - 1; index < len; ++index, --power )
-//	{
-//		long long tmp = result + (number_str[index] - 48) * pow(power);
-//		if (tmp < INT_MAX)
-//			result += (number_str[index] - 48) * pow(power);
-//		else
-//			return 0;
-//	}
-//	return result;
-//}
-
-int get_int( char* hello_text, int max_num )
+int subt(int op1, int op2)
 {
-    int chr;
-    int number_index = 0;
-	int number_sign = 1;
-    char number_str[ MAX_INT_POS ] = {0};
-	
-	std::cout << hello_text;
-    while(true)
-    {
-    	chr = _getch();
-		if ( chr == 13 )
-		{
-			number_str[number_index] = '\n';
-			break;
-		} else if ( number_index == 0 && chr == '-' )
-		{
-			number_sign = -1;
-			std::cout << (char) chr;
-		} else if ( chr >= '0' && chr <= '9' && max_num > number_index )
-    	{
-    		std::cout << (char) chr;
-    		number_str[number_index++] = (char) chr;
-    	} else if ( chr == 8 && number_index != 0 )
-    	{
-			backspace();
-    		number_str[number_index--] = 0;
-    	} else if ( chr == 8 && number_index == 0 && number_sign == -1 )
-		{
-			backspace();
-			number_sign = 1;
-		}
-    }
-	std::cout << std::endl;
-	return number_sign * atoi(number_str);
+	status = (int) CALC_OK;
+	return op1 - op2;
+}
+
+int division(int op1, int op2)
+{
+	if (op2 == 0)
+	{
+		status = (int) CALC_ZERO_DIVISION;
+		return 0;
+	}
+	else 
+	{
+		status = (int) CALC_OK;
+	}
+
+	return op1 / op2;
 }
 
 int main()
 {
-	int ten = pow(2);
-	char* intro = "Type in int with max length 10 symbols : ";
-    int a = get_int( intro, 10 );
-	std:: cout << "My int " << a << std:: endl;
-    return 0;
+	int op1 = 0;
+	int op2 = 0;
+	char operation_symbol;
+
+	int(*ops[6])(int, int) = { mult, sum, 0, subt, 0, division };
+	std::cout << "Type first operand: ";
+	std::cin >> op1;
+	std::cout << "Type second operand: ";
+	std::cin >> op2;
+	std::cout << "Type operation: ";
+	std::cin >> operation_symbol;
+
+	int res;
+	switch (operation_symbol)
+	{
+		case '*':
+		case '+':
+		case '-':
+		case '/':
+			res = ops[operation_symbol - '*'](op1, op2);
+			break;
+		default:
+			status = (int) CALC_WRONG_OPERATOR;
+			break;
+	}
+
+	std::cout << std::endl;
+	std::cout << "Result is : " << res << std::endl;
+	switch (status)
+	{
+	case 0:
+		std::cout << "Calc worked ok." << std::endl;
+		break;
+	case 1:
+		std::cout << "Input wrong operator." << std::endl;
+		break;
+	case 2:
+		std::cout << "Division by zero." << std::endl;
+		break;
+	}
+
+
+	return 0;
 }
