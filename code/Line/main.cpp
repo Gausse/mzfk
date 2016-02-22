@@ -4,10 +4,10 @@
 
 int main()
 {
+    fLine l1(1.0, 2.0, 3.0, 4.0);
+    fLine l2(5.0, 3.0, 1.0, 7.0);
 
-    iLine l1(1,2,3,4);
-    iLine l2(2,7,15,7);
-    std::cout << l1.isParallel(l2) << std::endl;
-
+    if (!l1.isParallel(l2))
+        l1.makeParallel(l2, 5);
     return 0;
 }
