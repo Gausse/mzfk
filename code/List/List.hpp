@@ -11,13 +11,6 @@ class List
         Node *p_prev;
         Node(T t_data, Node* n, Node* p) : data(t_data), p_next(n), p_prev(p){}
     };
-//    class iterator
-//    {
-//        Node* node;
-//    public:
-//        iterator();
-//        iterator(Node* l_node);
-//    };
 
     Node *p_begin, *p_end;
     int m_size;
@@ -118,16 +111,43 @@ public:
         delete del;
     }
 
-    void insert(T data, int place)
+    class iterator
     {
-        if (place > m_size)
+        Node* node;
+    public:
+        iterator() : node(NULL) {}
+        iterator(Node* l_node) : node(l_node) {}
+
+        T& operator*() const
         {
-            push_back(data);
-        } else {
-
+            return node;
         }
-    }
+        T* operator->() const
+        {
+            return *node;
+        }
 
+        iterator& operator++()
+        {
+            node = node->p_next;
+            return *this;
+        }
+        iterator operator++(int)
+        {
+            iterator* tmp = *this;
+            node = node->p_next;
+            return tmp;
+        }
+
+        friend bool operator==(iterator a, iterator b)
+        {
+            return a.node == b.node;
+        }
+        friend bool operator!=(iterator a, iterator b)
+        {
+            return a.node != b.node;
+        }
+    };
 //    void insert(Node* data, int place);
 //    Node* search(); //?????????????
 //    void deleteNode();
