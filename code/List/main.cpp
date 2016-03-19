@@ -30,6 +30,7 @@ int main()
     lt.sort(desc);
 
     lt.show(shower);
+    List<int> lt1 = lt;
     return 0;
 }
 

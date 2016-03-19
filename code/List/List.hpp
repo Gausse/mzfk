@@ -69,7 +69,14 @@ public:
                   << std::endl;
     }
 
-//    List(List &someList);
+    List(List &someList) : p_begin(NULL), p_end(NULL), m_size(0)
+    {
+        for(iterator it = someList.begin(), l_end = someList.end(); it.node != NULL; ++it)
+        {
+            this->push_back(it.node->data);
+        }
+    }
+
     ~List()
     {
         Node* index = p_begin;
