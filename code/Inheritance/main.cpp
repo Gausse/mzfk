@@ -2,9 +2,14 @@
 #include "b.h"
 #include "core.h"
 
-void destroyA(A* tmp)
+//void destroyA(A* tmp)
+//{
+//    tmp->destroy();
+//}
+
+void destroy(A* aa)
 {
-    tmp->destroy();
+    aa->~A();
 }
 
 int main()
@@ -13,10 +18,15 @@ int main()
 //    B b(2,3);
 //    A* pA = &b;
 //    B* pB = (B*) &a;
-    {
-//        A* a1 = new A(5);
-        std::shared_ptr<A> sh(new B(2,3), destroyA);
-    }
+//    {
+////        A* a1 = new A(5);
+//        std::shared_ptr<A> sh(new B(2,3), destroyA);
+//    }
+
+    char sBuff[sizeof(A)*10];
+    A* pA = (A*) sBuff;
+    pA = new(pA)A(5);
+    std::shared_ptr<A> sh(pA, destroy);
 //    A* ptr = new B(2,3);
 //    ptr->destroy();
 

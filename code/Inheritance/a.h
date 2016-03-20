@@ -15,7 +15,7 @@ public:
     {
         std::cout << "A destructor " << this << std::endl;
     }
-    virtual void destroy() = 0;
+//    virtual void destroy() = 0;
 
     virtual void show();
 };
