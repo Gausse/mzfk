@@ -1,8 +1,7 @@
 #include <iostream>
 #include "classes.h"
 
-
-int main()
+int main(int argc, char *argv[])
 {
     try
     {
@@ -13,24 +12,23 @@ int main()
                 Exception* pEx = new Exception("Exception");
                 throw pEx;
             }
-            catch(Exception *pEx)
+            catch(Exception* pEx)
             {
-                ChException *pCh = new ChException("ChException", pEx);
-                throw pCh;
+                ChException* pChEx = new ChException("Child", pEx);
+                throw pChEx;
             }
         }
-        catch(ChException *pCh)
+        catch(ChException* pEx)
         {
-            GrChException *pGr = new GrChException("GrChException", pCh);
-            throw pGr;
+            GrChException* pGrChEx = new GrChException("Grand", pEx);
+            throw pGrChEx;
         }
     }
-    catch (GrChException * pGr)
+    catch(GrChException* pEx)
     {
-        pGr->show();
-        delete pGr;
+        pEx->show();
+        delete pEx;
     }
 
     return 0;
 }
-

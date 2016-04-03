@@ -20,8 +20,9 @@ public:
     {
         if (mpPrev != NULL)
         {
-            std::cout << m_sText << std::endl;
+            mpPrev->show();
         }
+        std::cout << m_sText << std::endl;
     }
 };
 
@@ -30,7 +31,7 @@ class ChException : public Exception
 protected:
     Exception* mpChPrev;
 public:
-    ChException(char* msg, Exception* pPrev) : Exception(msg), mpChPrev(pPrev)
+    ChException(char* msg, Exception* pPrev) : Exception(msg, pPrev), mpChPrev(pPrev)
     {
         std::cout << "ChException " << "this >> " << this << std::endl;
     }
@@ -38,13 +39,6 @@ public:
     {
         std::cout << "ChException dest " << "this >> " << this << std::endl;
         delete mpPrev;
-    }
-    virtual void show()
-    {
-        if (mpPrev != NULL)
-        {
-            mpPrev->show();
-        }
     }
 };
 
@@ -57,17 +51,10 @@ public:
     {
         std::cout << "GrChException " << "this >> " << this << std::endl;
     }
-    ~GrChException()
+    virtual ~GrChException()
     {
         std::cout << "GrChException dest " << "this >> " << this << std::endl;
         delete mpPrev;
-    }
-    void show()
-    {
-        if (mpPrev != NULL)
-        {
-            mpPrev->show();
-        }
     }
 };
 
