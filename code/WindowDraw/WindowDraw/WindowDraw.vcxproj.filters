@@ -30,12 +30,18 @@
     <ClInclude Include="WindowDraw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DrawStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WindowDraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawStruct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

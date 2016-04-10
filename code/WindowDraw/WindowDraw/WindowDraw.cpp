@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "WindowDraw.h"
+#include "DrawStruct.h"
 
 #define MAX_LOADSTRING 100
 
@@ -10,7 +11,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-
+DrawStruct dw;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -32,6 +33,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_WINDOWDRAW, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
+
 
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
@@ -134,7 +136,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int y = HIWORD(lParam);
 			int nShift = 5;
 			HDC hDC = GetDC(hWnd);
+			Figure temp = {x, y, nShift, E_RECTANGLE};
 			Rectangle(hDC, x - nShift, y - nShift, x + nShift, y + nShift);
+			::dw.addFigure(temp);
 			ReleaseDC(hWnd, hDC);
 		}
 		break;
@@ -160,6 +164,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
+			dw.drawData(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
