@@ -11,7 +11,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-DrawStruct dw;
+DrawStructV1 dw;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -134,11 +134,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			int x = LOWORD(lParam);
 			int y = HIWORD(lParam);
-			int nShift = 5;
+			int nShift = 10;
 			HDC hDC = GetDC(hWnd);
-			Figure temp = {x, y, nShift, E_RECTANGLE};
+			FigureV1 temp;
+			temp.m_x = x;
+			temp.m_y = y;
+			temp.nShift = nShift;
+			temp.m_rDrawKind = E_RECTANGLE;
+			temp.brush = RGB(rand() % 255, rand() % 255, rand() % 255);
+			temp.canvas = RGB(rand() % 255, rand() % 255, rand() % 255);
+
+			HBRUSH temp_brush = CreateSolidBrush(temp.brush);
+			HPEN   temp_pen = CreatePen(PS_SOLID, 2, temp.canvas);
+			HBRUSH old_b = (HBRUSH)SelectObject(hDC, temp_brush);
+			HPEN   old_p = (HPEN)SelectObject(hDC, temp_pen);
+
 			Rectangle(hDC, x - nShift, y - nShift, x + nShift, y + nShift);
-			::dw.addFigure(temp);
+			::dw.addData(&temp);
+
+			SelectObject(hDC, old_b);
+			SelectObject(hDC, old_p);
+
+			DeleteObject(temp_brush);
+			DeleteObject(temp_pen);
+
 			ReleaseDC(hWnd, hDC);
 		}
 		break;
@@ -164,11 +183,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
-			dw.drawData(hdc);
+			::dw.drawData(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_DESTROY:
+		//::dw.destroy();
         PostQuitMessage(0);
         break;
     default:
