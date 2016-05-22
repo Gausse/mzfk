@@ -5,77 +5,113 @@
 
 struct Params
 {
-    std::shared_ptr<int> sp;
-    int mSize;
-    int mult;
-    HANDLE* mhandler;
-    Params(std::shared_ptr<int> sh, int size, int multt, HANDLE* hand) : sp(sh), mSize(size), mult(multt), mhandler(hand){}
+	int** data;
+	int size;
+	int* currMatrixIndex;
+    HANDLE* mutex;
+    Params(int** arr, int len, int* index, HANDLE* synchrono) : data(arr), size(len), currMatrixIndex(index), mutex(synchrono) {}
 };
 
-DWORD WINAPI ThF(void *pV)
+DWORD WINAPI ThFirst(void *pV)
 {
-    std::shared_ptr<Params> sh((Params*) pV);
-    std::cout << "First thread" << std::endl;
-    for(int i = 0; i < sh->mSize; ++i)
-    {
-        sh->sp.get()[i]*=sh->mult;
-        std::cout << sh->sp.get()[i] << " ";
-    }
-    std::cout << std::endl;
-    return 0;
+	std::shared_ptr<Params> sh((Params*)pV);
+	int index = 0;
+
+	WaitForSingleObject(sh->mutex, INFINITE);
+
+	index = (*sh->currMatrixIndex)++;
+
+	ReleaseMutex(sh->mutex);
+
+	for (int i = 0; i < sh->size; ++i)
+	{
+		sh->data[index][i] += 1;
+	}
+	return 0;
+}
+
+DWORD WINAPI ThSecond(void *pV)
+{
+	std::shared_ptr<Params> sh((Params*)pV);
+	int index = 0;
+
+	WaitForSingleObject(sh->mutex, INFINITE);
+
+	index = (*sh->currMatrixIndex)++;
+
+	ReleaseMutex(sh->mutex);
+
+	for (int i = 0; i < sh->size; ++i)
+	{
+		sh->data[index][i] -= 1;
+	}
+	return 0;
+}
+
+DWORD WINAPI ThThird(void *pV)
+{
+	std::shared_ptr<Params> sh((Params*)pV);
+	int index = 0;
+
+	WaitForSingleObject(sh->mutex, INFINITE);
+
+	index = (*sh->currMatrixIndex)++;
+
+	ReleaseMutex(sh->mutex);
+
+	for (int i = 0; i < sh->size; ++i)
+	{
+		sh->data[index][i] += 2;
+	}
+	return 0;
 }
 
 int main()
 {
-//    std::cout << "Give me size: " << std::endl;
-    int size = 10;
-//    std::cin >> size;
-    int* array = new int[size];
+	int currIndex = 0;
+    int size = 5;
+    int** array = new int*[size];
+
     for(int i = 0; i < size; ++i)
     {
-        array[i] = rand() % 100;
+		array[i] = new int[size];
+		for (int j = 0; j < size; ++j)
+		{
+			array[i][j] = rand() % 10;
+			std::cout << array[i][j] << " ";
+		}
+		std::cout << std::endl;
     }
 
-    for (int i = 0; i < size; ++i)
-    {
-        int l = 0;
-        int r = 0;
-        for (int index = i; index < size; ++index)
-        {
-            if (array[index] > 50)
-            {
-                l = index;
-                break;
-            }
-        }
-        for (int index = size - 1; index > 0; --index)
-        {
-            if (array[index] <= 50)
-            {
-                r = index;
-                break;
-            }
-        }
+	HANDLE mutex = CreateMutex(NULL, TRUE, L"word");
 
-        int buf = l;
-        l = r;
-        r = l;
-    }
+	system("pause");
 
-//    HANDLE my_thread = CreateThread(0, 0, ThF, new Params(sh, size, 10, NULL), 0, 0);
-//    HANDLE my_thread1 = CreateThread(0, 0, ThF1, new Params(sh, size, 3, &my_thread), 0, 0);
+	ReleaseMutex(mutex);
 
-//    WaitForSingleObject(my_thread1, INFINITE);
+	HANDLE my_thread = CreateThread(0, 0, ThFirst, new Params(array, size, &currIndex, &mutex), 0, 0);
+	HANDLE my_thread1 = CreateThread(0, 0, ThSecond, new Params(array, size, &currIndex, &mutex), 0, 0);
+	HANDLE my_thread2 = CreateThread(0, 0, ThThird, new Params(array, size, &currIndex, &mutex), 0, 0);
+	
+	system("pause");
+	std::cout << "----------------------------" << std::endl;
 
-//    std::cout << "Main thread" << std::endl;
-    for(int i = 0; i < size; ++i)
-    {
-        std::cout <<  array[i] << " ";
-    }
-    std::cout << std::endl;
+	for (int i = 0; i < size; ++i)
+	{
+		for (int j = 0; j < size; ++j)
+		{
+			std::cout << array[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
 
-//    CloseHandle(my_thread);
-//    CloseHandle(my_thread1);
+    CloseHandle(my_thread);
+    CloseHandle(my_thread1);
+	CloseHandle(my_thread2);
+
+	for (int i = 0; i < size; ++i)
+		delete[] array[i];
+	delete[] array;
     return 0;
 }
 
